@@ -1,0 +1,47 @@
+# Given a transition matrix for a Markov chain, this program runs
+# the chain for n steps, starting at start.  Visualizing the results
+# with hist is recommended.
+
+markov <- function(mat, n, start){
+# Takes a matrix input as well as number of steps in the chain and
+# the starting point in the chain.
+    point = start
+    pts = c(point)
+    # This function will output the list of points (pts) that are
+    # visited in the network, in order of visitation.
+    for(k in 1:n) {
+        tot = 0                                                    
+        # This count variable will help create a list (partition) of
+        # cumulative probabilities.  For example, if a transition
+        # matrix has probabilities 1/4, 1/4, and 1/2 for the
+        # transitions of 1 to 1, 1 to 2, and 1 to 3, respectively,
+        # then the list will be (0, 1/4, 1/2, 1), so that the
+        # positions of these partitions will determine what
+        # transition the point in the network makes.
+        partition = c(0)
+        probs = mat[point,]
+        # List of probabilities for each transition for the given
+        # present point, which is represented by the row of the
+        # matrix with the same number as that point.
+        for(p in probs) {
+            tot = tot + p
+            partition[length(partition) + 1] = tot
+        }
+        rando = runif(1,0,1)
+        for(m in 1:(length(partition)-1)) {
+            if(rando > partition[m] & rando < partition[m+1]) {
+                point = m
+            }
+        # Each region between two partitions specifies the range of
+        # possible results for the random number (between 0 and 1)
+        # that codes for a corresponding transition.  So in the
+        # above example, if the random number is 0.1, the point will
+        # stay at 1; if it's 0.3, it will go from 1 to 2; if it's
+        # 0.8, it will go from 1 to 3.
+        }
+        pts[length(pts)+1] = point
+        # Adds the endpoint of this step in this chain to the
+        # list of points.
+    }
+    return(pts)
+}
